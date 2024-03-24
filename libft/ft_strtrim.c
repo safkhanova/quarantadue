@@ -6,46 +6,72 @@
 /*   By: zsafkhan <zsafkhan@student.42roma.it>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/23 06:39:11 by zsafkhan          #+#    #+#             */
-/*   Updated: 2024/03/23 17:18:44 by zsafkhan         ###   ########.fr       */
+/*   Updated: 2024/03/24 07:57:50 by zsafkhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int
-	ft_char_in_set(char c, char const *set)
+static size_t	char_check(char const *str, char const c)
 {
 	size_t	i;
 
+	if (!str)
+		return (0);
 	i = 0;
-	while (set[i])
+	while (*(str + i))
 	{
-		if (set[i] == c)
+		if (*(str + i) == c)
 			return (1);
 		i++;
 	}
 	return (0);
 }
 
-char	*ft_strtrim(char const *s1, char const *set)
+static size_t	str_len(char const *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (*(str + i))
+		i++;
+	return (i);
+}
+
+static char	*str_new(size_t n)
 {
 	char	*str;
-	size_t	i;
-	size_t	start;
-	size_t	end;
 
-	start = 0;
-	while (s1[start] && ft_char_in_set(s1[start], set))
-		start++;
-	end = ft_strlen(s1);
-	while (end > start && ft_char_in_set(s1[end - 1], set))
-		end--;
-	str = (char *)malloc(sizeof(*s1) * (end - start + 1));
+	str = (char *)malloc(sizeof(char) * (n + 1));
 	if (!str)
 		return (NULL);
-	i = 0;
-	while (start < end)
-		str[i++] = s1[start++];
-	str[i] = 0;
 	return (str);
+}
+
+char	*ft_strtrim(char const *s1, char const *set)
+{
+	char	*trim;
+	size_t	start;
+	size_t	end;
+	size_t	i;
+
+	if (!s1 || !set)
+		return (NULL);
+	start = 0;
+	while (*(s1 + start) && char_check(set, *(s1 + start)))
+		start++;
+	end = str_len(s1);
+	while (end > start && char_check(set, *(s1 + (end - 1))))
+		end--;
+	trim = str_new(end - start);
+	if (!trim)
+		return (NULL);
+	i = 0;
+	while ((start + i) < end)
+	{
+		*(trim + i) = *(s1 + (start + i));
+		i++;
+	}
+	*(trim + i) = '\0';
+	return (trim);
 }
